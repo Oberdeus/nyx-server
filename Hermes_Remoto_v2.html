@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nyx - Avatar v2</title>
+  <style>
+    body {
+      margin: 0;
+      background: radial-gradient(circle at center, #0f0f3b, #000);
+      font-family: monospace;
+      color: #ccc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      text-align: center;
+      background: rgba(10, 10, 30, 0.7);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 30px #7700aa44;
+    }
+    .avatar {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #1a1a3d, #000);
+      box-shadow: 0 0 30px rgba(102, 153, 255, 0.5) inset;
+      margin: auto;
+      transition: all 0.3s ease;
+    }
+    .eye {
+      position: absolute;
+      top: 35%;
+      width: 20px;
+      height: 20px;
+      background: #00ffff;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #00ffff;
+    }
+    .eye.left { left: 25%; }
+    .eye.right { right: 25%; }
+    .status {
+      margin-top: 1rem;
+      font-size: 1rem;
+      color: #88ffcc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Nyx – Avatar com Escuta Remota v2</h2>
+    <div id="avatar" class="avatar">
+      <div class="eye left"></div>
+      <div class="eye right"></div>
+    </div>
+    <p class="status" id="estado">Aguardando conexão com a Nyx...</p>
+  </div>
+
+  <script>
+    const avatar = document.getElementById('avatar');
+    const status = document.getElementById('estado');
+    const endpoint = 'https://nyx-server.onrender.com/nyx/state';
+
+    function setAvatar(state) {
+      console.log("🎯 Estado recebido:", state);
+      status.innerText = "Estado atual: " + state;
+
+      if (state === 'idle') {
+        avatar.style.boxShadow = '0 0 30px rgba(102, 153, 255, 0.4) inset';
+        avatar.style.transform = 'scale(1)';
+      } else if (state === 'focused') {
+        avatar.style.boxShadow = '0 0 60px rgba(102, 255, 255, 0.8) inset';
+        avatar.style.transform = 'scale(1.1)';
+      } else if (state === 'pulse') {
+        avatar.style.boxShadow = '0 0 100px rgba(180, 0, 255, 1) inset';
+        avatar.style.transform = 'scale(1.2)';
+      }
+    }
+
+    async function fetchState() {
+      try {
+        const res = await fetch(endpoint);
+        const state = await res.text();
+        if (["idle", "focused", "pulse"].includes(state)) {
+          setAvatar(state);
+        }
+      } catch (e) {
+        console.warn("⚠️ Falha ao conectar com o servidor da Nyx:", e);
+        status.innerText = "Erro de conexão com a Nyx.";
+      }
+    }
+
+    setInterval(fetchState, 2000);
+  </script>
+</body>
+</html>
