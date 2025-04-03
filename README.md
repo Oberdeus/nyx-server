@@ -1,1 +1,1 @@
-# Servidor Hermes com persistência simbólica de estado
+# Nyx Server com CORS livre e estado simbólico em memória
